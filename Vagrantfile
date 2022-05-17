@@ -65,13 +65,13 @@ Vagrant.configure("2") do |config|
         
         controller.vm.network :private_network, ip: "192.168.33.12"
 
-        controller.vm.synced_folder ".", ".", type: "rsync", 
+        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
         rsync__args: ["--include=web-playbook.yml"]
         
-        controller.vm.synced_folder ".", ".", type: "rsync", 
+        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
         rsync__args: ["--include=web-dependencies.sh"]
 
-        controller.vm.synced_folder ".", ".", type: "rsync", 
+        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
         rsync__args: ["--include=hosts"]
 
         controller.vm.provision "shell", path: "controller_provision.sh"
