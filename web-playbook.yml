@@ -1,0 +1,50 @@
+---
+# where do we want to install nginx
+- hosts: web
+
+# do we want to see logs - gather facts
+  gather_facts: yes
+
+# what permissions do we need to run this playbook, become sudo
+  become: true
+  # used for sudo/admin access
+
+# what is the name of the package, -name is case-insensitive
+  tasks:
+  - name: install Nginx
+    apt: pkg=nginx state=present
+
+  - name: install Python
+    apt: pkg=python3 state=present
+
+  - name: copy web-dependencies.sh
+    copy: src=/home/vagrant/web-dependencies.sh dest=.
+
+  #- name: Copy App folder
+   # copy: src=/home/vagrant/eng110-cicd-main dest=.
+    # copy: src=/home/vagrant/sg_application_from_aws dest=.
+
+  - name: run script
+    shell: |
+      chmod +x web-dependencies.sh
+      bash web-dependencies.sh
+
+  # - name: kill node & nginx
+  #   shell: |
+  #     sudo pkill -f node
+  #     sudo pkill -f nginx
+  #   ignore_errors: True
+
+  # - name: Install forever (to run Node.js app)
+  #   npm: name=forever global=yes state=present
+
+  # - name: "Check list of Node.js apps running."
+  #   command: forever list
+  #   register: forever_list
+  #   changed_when: false
+
+  # - name: "Start Node.js app."
+  #   shell: |
+  #     cd eng110-cicd-main/sg_application_from_aws/app/
+  #     forever start app.js
+  #   when: "forever_list.stdout.find('app.js') == -1"
