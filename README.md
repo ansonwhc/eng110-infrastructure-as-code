@@ -1,6 +1,7 @@
 # Infrastructure as Code (IaC)
 IaC is the management of infrastructure, such as networks, VMs, and load balancers, in a descriptive model, using a set of pre-set instructions and commands. An IaC model generates the same environment every time it is applied.
 
+Ansible guide [here](ansible-guide.md)
 
 ## Benefits
 - Testing/Running applications in production-like environment early in the development cycle to prevent common deployment issues
