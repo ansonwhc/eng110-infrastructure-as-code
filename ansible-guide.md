@@ -3,7 +3,7 @@
 ![](/images/ansible.png)
 
 # Exercise
-1. Create 2/3 VMs with Vagrant
+1. Create 3 VMs with Vagrant
     - app & db & controller
     - config stored in [Vagrantfile](Vagrantfile)
         - Within we can run our [provision.sh](provision.sh)
@@ -27,22 +27,23 @@
     `ssh vagrant@192.168.33.11`
     password: `vagrant`
     `sudo apt-get update -y`
-    - this sign in process allow for the key to be saved to "ansible known hosts"
+    - this sign-in process allows for the key to be saved to the "ansible known hosts"
 
     - check connection with web (within controller VM)
     `ssh vagrant@192.168.33.10`
     password: `vagrant`
     `sudo apt-get update -y`
-    - this sign in process allow for the key to be saved to "ansible known hosts"
+   - this sign-in process allows for the key to be saved to the "ansible known hosts"
 
     - we can ssh into the db and web from controller because we have ansible installed and being the controller of these two VMs
 
     - under `/etc/ansible/` we should see ansible.cfg, hosts, and roles
-    - cd /etc/ansible/
-    - sudo nano hosts
+    - `cd /etc/ansible/`
+    - `sudo nano hosts`
         - indi IP -> upgrouped hosts
         - group IPs -> [webservers], e.g. ASG
         - add web & db IPs to grouped hosts
+            ![](/images/Screenshot%202022-05-17%20135355.png)
 
     - `sudo ansible web -m ping` -> access denied, because we haven't set up any keys to sign in to the web machine yet
         - `ping` is just connecting to an IP, can do bbc.com
@@ -52,6 +53,7 @@
         - ansible_ssh_pass=vagrant
 
     - `sudo ansible all -m ping` -> check all machines connection
+    ![](/images//Screenshot%202022-05-17%20140050.png)
 
 3. Set up Ansible controller with required dependencies
 
