@@ -60,8 +60,10 @@ OR:
 Set up .pem key within .ssh folder
 TODO: automate copying this file
 `cd ~/.ssh`
+`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
+`sudo chmod 400 eng119.pub`
 `sudo nano eng119.pem`   # previous key
-`sudo chmod 444 eng119.pem`
+`sudo chmod 400 eng119.pem`
 
 Pass the .pem to hosts for signing in
 `cd /etc/ansible`
@@ -71,9 +73,8 @@ Pass the .pem to hosts for signing in
 >ec2-instance ansible_host=aws-public-ip ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/eng119.pem
 
 
-Set up aws group in hosts
-`>>>[aws]`
-`>>>`
-`ansible-playbook <playbook>.yml --ask-vault-pass`
-
-
+Run ansible playbooks to set up the app on aws
+`sudo ansible-playbook <playbook>.yml --ask-vault-pass`
+Current notebooks stored: [here](/ec2-ansible-playbooks)
+- To run ec2-controller-playbook.yml:
+- `sudo ansible-playbook ec2-controller-playbook.yml --ask-vault-pass --tags create_ec2`

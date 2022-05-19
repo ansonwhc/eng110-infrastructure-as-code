@@ -1,0 +1,11 @@
+# This is still not usable atm
+---
+
+- import_playbook: ec2-controller-playbook.yml
+# TODO: wait until the instances are fully set up the nrun the rest
+# TODO: add new instances IP to /etc/ansible/hosts (maybe look up using inventory)
+- import_playbook: ec2-db-playbook.yml
+- import_playbook: ec2-app-playbook.yml
+# TODO: add env var DB_HOST=mongodb://<mongo IP>:27017/posts to the app instance
+# TODO: seed the database
+# TODO: potentially restart the app

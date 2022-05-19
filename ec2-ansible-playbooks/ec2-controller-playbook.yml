@@ -1,0 +1,149 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    key_name: eng119
+    region: eu-west-1
+    app_image: ami-07e5be90a4569bf1c # Ubuntu Server 18.04 LTS
+    db_image: ami-07e5be90a4569bf1c
+    app_id: "eng110-anson-ansible-ec2-app-11"
+    db_id: "eng110-anson-ansible-ec2-db-11"
+    app_sec_group: "{{ app_id }}-sec"
+    db_sec_group: "{{ db_id }}-sec"
+    subnet_id: subnet-0429d69d55dfad9d2
+
+  tasks:
+
+    - name: Facts
+      block:
+
+      - name: Get instances facts
+        ec2_instance_facts:
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+          region: "{{ region }}"
+        register: result
+
+      - name: App Instances ID
+        debug:
+          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
+        loop: "{{ result.instances }}"
+
+      tags: always
+
+
+    - name: Provisioning App EC2 instance
+      block:
+
+      - name: Upload public key to AWS
+        ec2_key:
+          name: "{{ key_name }}"
+          key_material: "{{ lookup('file', '~/.ssh/{{ key_name }}.pub') }}"
+          region: "{{ region }}"
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+
+      - name: Create app security group
+        ec2_group:
+          name: "{{ app_sec_group }}"
+          description: "Sec group for app {{ app_id }}"
+          region: "{{ region }}"
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+          rules:
+            - proto: tcp
+              ports:
+                - 22
+              cidr_ip: 94.9.175.94/32
+
+            - proto: tcp
+              ports:
+                - 80
+              cidr_ip: 0.0.0.0/0
+
+            #- proto: tcp
+            #  ports:
+            #    - 80
+            #  cidr_ip: ::/0
+
+            - proto: tcp
+              ports:
+                - 3000
+              cidr_ip: 0.0.0.0/0
+
+            #- proto: tcp
+            #  ports:
+            #    - 3000
+            #  cidr_ip: ::/0
+        register: result_app_sec_group
+
+      - name: Provision app instance
+        ec2:
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+          assign_public_ip: true
+          key_name: "{{ key_name }}"
+          id: "{{ app_id }}"
+          group_id: "{{ result_app_sec_group.group_id }}"
+          image: "{{ app_image }}"
+          vpc_subnet_id: "{{ subnet_id }}"
+          instance_type: t2.micro
+          region: "{{ region }}"
+          wait: true
+          count: 1
+          instance_tags:
+            Name: eng110-anson-ansible-ec2-app
+          count_tag:
+            Name: app
+        register: app_instance_info
+
+      #- name: Print output
+      #  debug:
+      #    msg: "{{ app_instance_info }} - {{ app_instance_info.instances[0].public_ip }}"
+    - name: Provisioning DB EC2 instance
+      block:
+
+      - name: Create db security group
+        ec2_group:
+          name: "{{ db_sec_group }}"
+          description: "Sec group for db {{ db_id }}"
+          region: "{{ region }}"
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+          rules:
+            - proto: tcp
+              ports:
+                - 22
+              cidr_ip: 94.9.175.94/32
+
+            - proto: tcp
+              ports:
+                - 27017
+              cidr_ip: "{{ app_instance_info.instances[0].public_ip }}/32"  #app IP
+
+        register: result_db_sec_group
+
+      - name: Provision db instance
+        ec2:
+          aws_access_key: "{{ec2_access_key}}"
+          aws_secret_key: "{{ec2_secret_key}}"
+          assign_public_ip: true
+          key_name: "{{ key_name }}"
+          id: "{{ db_id }}"
+          group_id: "{{ result_db_sec_group.group_id }}"
+          image: "{{ db_image }}"
+          vpc_subnet_id: "{{ subnet_id }}"
+          instance_type: t2.micro
+          region: "{{ region }}"
+          wait: true
+          count: 1
+          instance_tags:
+            Name: eng110-anson-ansible-ec2-db
+          count_tag:
+            Name: DB
+        register: db_instance_info
+
+      tags: ['never', 'create_ec2']
