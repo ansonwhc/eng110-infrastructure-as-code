@@ -27,7 +27,8 @@ resource "aws_internet_gateway" "gw" {
 
 resource "aws_subnet" "terraform_subnet" {
     vpc_id = aws_vpc.terraform_vpc.id
-    cidr_block = var.public_subnet_cidr  
+    # cidr_block = var.public_subnet_cidr  
+    cidr_block = var.vpc_cidr
     depends_on = [aws_internet_gateway.gw]
 
     tags = {
@@ -52,6 +53,15 @@ resource "aws_route_table_association" "rta" {
     subnet_id = aws_subnet.terraform_subnet.id
     route_table_id = aws_route_table.rt.id
 }
+
+# resource "aws_network_acl" "nacl" {
+#   vpc_id = aws_vpc.terraform_vpc.id
+# }
+
+# resource "aws_network_acl_association" "sn_nacl" {
+#   network_acl_id = aws_network_acl.nacl.id
+#   subnet_id      = aws_subnet.terraform_subnet.id
+# }
 
 resource "aws_security_group" "terraform_sg" {
     vpc_id = aws_vpc.terraform_vpc.id
