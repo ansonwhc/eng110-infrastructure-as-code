@@ -1,7 +1,14 @@
 # Infrastructure as Code (IaC)
-IaC is the management of infrastructure, such as networks, VMs, and load balancers, in a descriptive model, using a set of pre-set instructions and commands. An IaC model generates the same environment every time it is applied.
+IaC is the management of infrastructure, such as networks, VMs, and load balancers, in a descriptive model, using a set of pre-set instructions and commands. An IaC model generates the same environment every time it is applied. 
 
-Ansible guide [here](ansible-guide.md)
+he servers can be configured by using one of the two methods.  
+- Push method: The controlling server pushes the configuration to the destination system.
+
+Pull method: the to be configured server pulls its configuration from the controlling server.
+
+Ansible guide [here](ansible-guide.md)  
+
+![](/images/infrastructure-as-code.png)
 
 ## Benefits
 - Testing/Running applications in production-like environment early in the development cycle to prevent common deployment issues
@@ -20,9 +27,9 @@ Ansible guide [here](ansible-guide.md)
 ![](images/Screenshot%202022-05-17%20105906.png)
 
 ## Configuration management and Orchestration under IaC
-- Configuration management is a way to configure the software and stsems on a machine, such as by installing applications, updates, opening up ports, ensuring services are stopped or started. Its purpose is to bring consistency in the infrastructure.
+- Configuration management is a way to configure the software and systems on a machine, such as by installing applications, updates, opening up ports, ensuring services are stopped or started. Its purpose is to bring consistency in the infrastructure.
 
-- Configuration orchestration are designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks.
+- Orchestration are designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks.
 
 ### Tools
 - Configuration management: Ansible, Chef, Puppet

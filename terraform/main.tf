@@ -106,6 +106,10 @@ resource "aws_instance" "app_instance" {
       private_key = file(var.aws_key_path)
       timeout     = "2m"
    }
+   provisioner "file" {
+     source      = var.app_source_path
+     destination = var.app_dest_path
+  }
 }
 
 # # 2. Move the app folder to the instance
