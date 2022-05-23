@@ -4,7 +4,7 @@ IaC is the management of infrastructure, such as networks, VMs, and load balance
 he servers can be configured by using one of the two methods.  
 - Push method: The controlling server pushes the configuration to the destination system.
 
-Pull method: the to be configured server pulls its configuration from the controlling server.
+- Pull method: the to be configured server pulls its configuration from the controlling server.
 
 Ansible guide [here](ansible-guide.md)  
 
