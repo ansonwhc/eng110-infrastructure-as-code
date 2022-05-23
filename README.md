@@ -12,7 +12,7 @@ Ansible guide [here](ansible-guide.md)
 
 ## Benefits
 - Testing/Running applications in production-like environment early in the development cycle to prevent common deployment issues
-- Sable and reliable environments can be delivered rapidly at scale
+- Stable and reliable environments can be delivered rapidly at scale
 - Environment consistency
 - Repeatable
 - Prevent configuration drift and missing dependencies
