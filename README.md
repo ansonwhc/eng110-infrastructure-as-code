@@ -29,7 +29,7 @@ Ansible guide [here](ansible-guide.md)
 ## Configuration management and Orchestration under IaC
 - Configuration management is a way to configure the software and systems on a machine, such as by installing applications, updates, opening up ports, ensuring services are stopped or started. Its purpose is to bring consistency in the infrastructure.
 
-- Orchestration are designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks.
+- Orchestration is designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks.
 
 ### Tools
 - Configuration management: Ansible, Chef, Puppet
