@@ -2,12 +2,12 @@
 
 # 1. Create a script to launch ec2
 
-# first step to create block of code to communicate with aws
+# communicate with aws
 provider "aws" {
     region = var.aws_region
 }
 
-# let terraform know which service/resource we want to create
+# create a VPC
 resource "aws_vpc" "terraform_vpc" {
     cidr_block = var.vpc_cidr
     instance_tenancy = "default"
@@ -76,40 +76,48 @@ resource "aws_security_group" "terraform_sg" {
 }
 
 resource "aws_instance" "app_instance" {
+  # where this instance is located
+  subnet_id = aws_subnet.terraform_subnet.id
 
-    subnet_id = aws_subnet.terraform_subnet.id
-    # depends_on = [aws_internet_gateway.gw]
+  # choose an AMI to create ec2
+  ami = var.node_ami_id
 
-    # choose an AMI to create ec2
-    ami = var.node_ami_id
+  # what type of instance to launch
+  instance_type = var.aws_instance_type
 
-    # what type of instance to launch
-    instance_type = var.aws_instance_type
+  # do we want to have it globally available - public ip
+  associate_public_ip_address = true
 
-    # do we want to have it globally available - public ip
-    associate_public_ip_address = true
+  # instance security group
+  security_groups = ["${aws_security_group.terraform_sg.id}"]
+    
+  # attach the file.pem for access from localhost
+  key_name = var.aws_key_name
 
-    security_groups = ["${aws_security_group.terraform_sg.id}"]
-
-    # name your instance 
-    tags = {
-        Name = "${var.name}-terraform-app"
-    }
-
-    # attach the file.pem for access from localhost
-    key_name = var.aws_key_name
-
-    connection {
+  connection {
       type        = "ssh"
       host        = self.public_ip
       user        = "ubuntu"
       private_key = file(var.aws_key_path)
       timeout     = "2m"
-   }
-   provisioner "file" {
-     source      = var.app_source_path
-     destination = var.app_dest_path
+  }
+      
+  # 2. Move the app folder to the instance
+  provisioner "file" {
+    source = var.app_source_path
+    destination = var.app_dest_path
+  }
+  
+  # provisioner "local-exec" {
+  #   command = "sudo chmod +x ~/sg_application_from_aws/app-setup.sh"
+  # }
+
+  # provisioner "local-exec" {
+  #   command = "bash ~/sg_application_from_aws/app-setup.sh"
+  # }
+
+  # name the instance 
+  tags = {
+    Name = "${var.name}-terraform-app"
   }
 }
-
-# # 2. Move the app folder to the instance

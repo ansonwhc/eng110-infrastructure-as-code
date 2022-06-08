@@ -17,6 +17,8 @@ Within `main.tf`
 
     `resource`: specify the resource we want to create
 
+When `terraform apply` being run, terraform.tfstate will check if there is any new changes between the main.tf and current instance state. If there is any changes, the updates will be applied.
+
 
 Short summary of Terraform: https://www.youtube.com/watch?v=tomUWcQ0P3k
 

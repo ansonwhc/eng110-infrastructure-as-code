@@ -29,13 +29,7 @@ Ansible guide [here](ansible-guide.md)
 ## Configuration management and Orchestration under IaC
 - Configuration management is a way to configure the software and systems on a machine, such as by installing applications, updates, opening up ports, ensuring services are stopped or started. Its purpose is to bring consistency in the infrastructure.
 
-- Orchestration is designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks.
-
-### Tools
-- Configuration management: Ansible, Chef, Puppet
-    - Procedural style
-- Orchestration: Terraform, AWS Cloudformation
-    - Declarative style
+- Orchestration is designed to automate the deployment of the infrasructure. It arranges and coordinates multiple systems, by specifying when to run which tasks. For example, Ansible is an open-source tool that allows the controller to run adhoc commands by design across multiple machines, which is very useful for completing orchestration tasks.
 
 ## Example
 IaC can solve the problem of environment drift in the release pipeline. Environment drift is when different teams maintaining and configuring their own environment, and over time, each environment has an unique configuration that is different to the ones used in the other teams. This inconsistency among environments leads to issues during deployment. This manual process is hard to track and likely to cause errors.
