@@ -1,9 +1,9 @@
 under controller VM
-`sudo apt-get install python3`
+`sudo apt-get install python3 -y`
 `alias python=python3`
-`sudo apt-get install python3-pip`
+`sudo apt-get install python3-pip -y`
 `sudo apt-add-repository --yes --update ppa:ansible/ansible`
-`sudo apt-get install ansible`
+`sudo apt-get install ansible -y`
 
 latest botocore: https://github.com/boto/botocore
 `git clone https://github.com/boto/botocore.git`

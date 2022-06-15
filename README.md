@@ -1,7 +1,7 @@
 # Infrastructure as Code (IaC)
 IaC is the management of infrastructure, such as networks, VMs, and load balancers, in a descriptive model, using a set of pre-set instructions and commands. An IaC model generates the same environment every time it is applied. 
 
-he servers can be configured by using one of the two methods.  
+The servers can be configured by using one of the two methods.  
 - Push method: The controlling server pushes the configuration to the destination system.
 
 - Pull method: the to be configured server pulls its configuration from the controlling server.
