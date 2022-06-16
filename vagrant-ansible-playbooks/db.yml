@@ -24,12 +24,3 @@
         sed -i '24s/.*/  bindIp: 0.0.0.0/' /etc/mongod.conf
         sudo systemctl start mongod
         sudo systemctl enable mongod
-
-- hosts: web
-  gather_facts: yes
-  become: true
-
-  tasks:
-    - name: set environment variable
-      shell: |
-        export DB_HOST=mongodb://db-ip:27017/posts
