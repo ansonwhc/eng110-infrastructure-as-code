@@ -27,13 +27,9 @@ Vagrant.configure("2") do |config|
         web.vm.network :private_network, ip: "192.168.33.10"
         # assigning private IP
 
-        web.vm.provision "shell", path: "web_provision.sh"
+        # web.vm.provision "shell", path: "web_provision.sh"
 
         web.vm.synced_folder "sg_application_from_aws", "/home/vagrant/sg_application_from_aws"
-        
-        # controller.vm.provision "ansible" do |ansible|
-        #     ansible.playbook = "web-playbook.yml"
-        # end
 
         # config.hostsupdater.aliases = ["development.web"]
         # creating a link called development.web so we can access web page with this link instread of an IP
@@ -49,14 +45,14 @@ Vagrant.configure("2") do |config|
         
         db.vm.network :private_network, ip: "192.168.33.11"
 
-        db.vm.provision "shell", path: "db_provision.sh"
+        # db.vm.provision "shell", path: "db_provision.sh"
         
         # config.hostsupdater.aliases = ["development.db"]
     end
     
     
     
-    # creating are Ansible controller
+    # creating are Ansible controller (could use localhost instead of a VM)
     config.vm.define "controller" do |controller|
     
         controller.vm.box = "bento/ubuntu-18.04"
@@ -65,16 +61,10 @@ Vagrant.configure("2") do |config|
         
         controller.vm.network :private_network, ip: "192.168.33.12"
 
-        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
-        rsync__args: ["--include=web-playbook.yml"]
-        
-        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
-        rsync__args: ["--include=web-dependencies.sh"]
+        controller.vm.synced_folder "vagrant-ansible-playbooks/.", "/home/vagrant/.", type: "rsync"
+        #rsync__args: ["--include=hosts"]
 
-        controller.vm.synced_folder ".", "/home/vagrant/.", type: "rsync", 
-        rsync__args: ["--include=hosts"]
-
-        controller.vm.provision "shell", path: "controller_provision.sh"
+        controller.vm.provision "shell", path: "vagrant-executables/controller_provision.sh"
 
         # config.hostsupdater.aliases = ["development.controller"]
         

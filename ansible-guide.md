@@ -1,4 +1,9 @@
 # Ansible
+- What is Ansible [here](#what-is-ansible)
+- Architecture [here](#architecture)
+- Ansible setup [here](#ansible-setup)
+- Ansible Vault Setup with AWS [here](#ansible-vault-setup-with-aws)
+- Quick Example [here](#quick-example)
 
 ## What is Ansible?
 Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code.
@@ -116,7 +121,7 @@ Ansible describes the desired state. This file should exist here, owned by this 
       npm start
 ```
 
-## Ansible Vault Setup (with AWS)
+## Ansible Vault Setup with AWS
 - `cd /etc/ansible/`
 - Create folder structure for ansible vault
     - `mkdir -p group_vars/all/`
@@ -124,8 +129,8 @@ Ansible describes the desired state. This file should exist here, owned by this 
     - `sudo ansible-vault create pass.yml`
     - `(sudo ansible-vault edit pass.yml) (to edit)`
 
-        ec2_access_key: xxxx
-        ec2_secret_key: xxxx
+            ec2_access_key: xxxx
+            ec2_secret_key: xxxx
 
 - Copy SSH key from local to controller
     - From `hosts`
@@ -142,19 +147,27 @@ Ansible describes the desired state. This file should exist here, owned by this 
 - For playbook examples: 
     - [ec2-ansible-playbooks](/ec2-ansible-playbooks/)
     - [vagrant-ansible-playbooks](/vagrant-ansible-playbooks/)
+
+- Application Architecture
+    - We want to deploy the [sg_application_from_aws](/sg_application_from_aws/)
+    - It requires nginx, nodejs, mongodb, and setting an environment variable
+    - More details [here](/sg_application_from_aws/README.md)
+
+    ![](/images/ansible-app-db.png)
+
 1. Create 3 VMs with Vagrant
     - app & db & controller
     - config stored in [Vagrantfile](Vagrantfile)
-        - Within we can run our [provision.sh](provision.sh)
+        - (Optional) Within we can run our [controller_provision.sh](/vagrant-executables/controller_provision.sh) to set up ansible
     - `vagrant up`
 
         ![](/images/Screenshot%202022-05-17%20125945.png)
 
-2. Create Ansible controller with 2 agent nodes - web & db
+2. Manually create Ansible controller with 2 agent nodes - web & db
     - Set up Ansible controller `vagrant ssh controller`
     - (If not yet done) Install python --version 2.7 -> ideally 3 or above
     - Set up Ansible controller with required dependencies
-    - test ansible --version
+    - test `ansible --version`
     
     step |setup command | function
     --- | --- | ---
@@ -162,19 +175,19 @@ Ansible describes the desired state. This file should exist here, owned by this 
     2 | `sudo apt-add-repository ppa:ansible/ansible` | adding repository
     3 | `sudo apt-get update -y` | update
     4 | `sudo apt-get install ansible` | install ansible
-    5 - optional | . | upgrade python to python3, required later
+    5 - optional | `alias python=python3` | set alias python to python3, required later
     6 | `sudo apt-get install tree` | prettier output of dirs
 
     - check connection with db (within controller VM)
-    `ssh vagrant@192.168.33.11`
-    password: `vagrant`
-    `sudo apt-get update -y`
+    `ssh vagrant@192.168.33.11`  
+    password: `vagrant`  
+    `sudo apt-get update -y`  
     - this sign-in process allows for the key to be saved to the "ansible known hosts"
 
     - check connection with web (within controller VM)
-    `ssh vagrant@192.168.33.10`
-    password: `vagrant`
-    `sudo apt-get update -y`
+    `ssh vagrant@192.168.33.10`  
+    password: `vagrant`  
+    `sudo apt-get update -y`  
    - this sign-in process allows for the key to be saved to the "ansible known hosts"
 
     - we can ssh into the db and web from controller because we have ansible installed and being the controller of these two VMs
@@ -203,4 +216,19 @@ Ansible describes the desired state. This file should exist here, owned by this 
     - `sudo ansible all -a "sudo apt-get update -y"`
     - to transfer files between nodes, http://www.freekb.net/Article?id=3009#:~:text=The%20ansible%20ad%2Dhoc%20command,directory%20on%20the%20managed%20node.
         - `sudo ansible web --module-name copy --args "src=/etc/ansible/test.txt dest=."`
-        - `sudo ansible web --module-name copy --args "src=web-dependencies.sh dest=."`
+
+4. Setup an web application and a database
+    - Copy playbooks in [vagrant-ansible-playbooks](/vagrant-ansible-playbooks/) to the Ansible controller VM
+    - From the controller, run the [setup.yml](/vagrant-ansible-playbooks/setup.yml)
+        - within the file, it imports all other ansible playbooks including:
+            - [db.yml](/vagrant-ansible-playbooks/db.yml)
+            - [nginx.yml](/vagrant-ansible-playbooks/nginx.yml)
+            - [nodejs.yml](/vagrant-ansible-playbooks/nodejs.yml)
+            - [start-app.yml](/vagrant-ansible-playbooks/start-app.yml)
+
+5. Access the web application from the web VM IP `192.168.33.10`
+    - Application should be running
+    - `192.168.33.10:3000` - homepage
+    - `192.168.33.10:3000/fibonacci/3` - fibonacci function page (the third number in the fibonacci sequence)
+    - `192.168.33.10:3000/posts` - database
+

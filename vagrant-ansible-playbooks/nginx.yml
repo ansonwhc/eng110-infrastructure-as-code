@@ -1,0 +1,43 @@
+---
+- hosts: web
+  gather_facts: yes
+  become: true
+
+  tasks:
+    - name: update & upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+        
+    - name: Install nginx
+      apt: pkg=nginx state=present
+
+    - name: delete default nginx conf
+      file:
+        state: absent
+        path: /etc/nginx/sites-available/default
+
+    - name: Touch a file, using symbolic modes to set the permissions (equ$
+      file:
+        path: /etc/nginx/sites-enabled/reverseproxy.conf
+        state: touch
+        mode: '666'
+
+    - name: Insert multiple lines and Backup
+      blockinfile:
+        path: /etc/nginx/sites-enabled/reverseproxy.conf
+        backup: yes
+        block: |
+          server{
+            listen 80;
+            server_name _;
+            location / {
+                proxy_pass http://localhost:3000/;
+            }
+          }
+
+    - name: Create a symbolic link
+      file:
+        src: /etc/nginx/sites-enabled/reverseproxy.conf
+        dest: /etc/nginx/sites-available/reverseproxy.conf
+        state: link

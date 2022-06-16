@@ -1,0 +1,12 @@
+---
+- name: run db
+  import_playbook: db.yml
+  
+- name: run nginx
+  import_playbook: nginx.yml
+
+- name: run nodejs
+  import_playbook: nodejs.yml
+
+- name: start app
+  import_playbook: start-app.yml

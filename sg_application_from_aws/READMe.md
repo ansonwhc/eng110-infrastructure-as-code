@@ -1,100 +1,52 @@
-# Let's build a Continuous Integration and Continuous Delivery/Deployment (CICD) Pipeline
-## Jenkins
-### Webhooks with Git-hub
-#### Automated Testing using Jenkins
-#### Automated Deployment on AWS EC2 for 2Tier architecture - Nodejs app and Mongodb  
-- test 1
+# Sparta Node Sample App
 
-- Jenkins Workflow
-  
-![](images/jenkins.png)
+## Description
 
-  ##### Contiounus Integration Continuous Delivery/Deployment 
-![](images/CICD.png)
+This app is intended for use with the Sparta Global Devops Stream as a sample app. You can clone the repo and use it as is but no changes will be accepted on this branch. 
 
-###### Let's break it down 
-  ![](images/cicd_jenkins.png)
+To use the repo within your course you should fork it.
 
-### For deployment job in Jenkins
-- In the execute shell of CD job
+The app is a node app with three pages.
+
+### Homepage
+
+``localhost:3000``
+
+Displays a simple homepage displaying a Sparta logo and message. This page should return a 200 response.
+
+### Blog
+
+``localhost:3000/posts``
+
+This page displays a logo and 100 randomly generated blog posts. The posts are generated during the seeding step.
+
+This page and the seeding is only accessible when a database is available and the DB_HOST environment variable has been set with it's location.
+
+### A fibonacci number generator
+
+``localhost:3000/fibonacci/{index}``
+
+This page has be implemented poorly on purpose to produce a slow running function. This can be used for performance testing and crash recovery testing.
+
+The higher the fibonacci number requested the longer the request will take. A very large number can crash or block the process.
+
+## Usage
+
+Clone the app
 
 ```
-# we need to by pass the key asking stage with below command:
-ssh -A -o "StrictHostKeyChecking=no" ubuntu@ec2-ip << EOF	
-# copy the the code
-# run your provision.sh to install node with required dependencies for app instance - same goes for db instance (ensure to double check if node and db are actively running)
-
-# create an env to connect to db
-# navigate to app folder
-# kill any existing pm2 process just in case
-# launch the app
-nohup node app.js > /dev/null 2>&1 & - use this command to run node app in the background
-
-# To debug ssh into your ec2 and run the above commands
-    
-
-EOF
+npm install
+npm start
 ```
-## Jenkins CI Lab - Solution
 
-##### Steps
+You can then access the app on port 3000 at one of the urls given above.
 
-##### Source Code Management
+## Tests
 
-1. Set Branches to Build to develop
-2. Under additional behaviours click add and "Merge before build"
-3. name of repo "origin"
-4. branch to merge "main"
+There is a basic test framework available that uses the Mocha/Chai framework
 
-### Post-Build Actions
+```
+npm test
+```
 
-#### Git Publisher
-
-1. Add Post Build Action
-2. Git Publisher
-3. Push Only if Build Succeeds
-4. Merge Results
-5. change made on dev brance
-
---- 
-Tigger deployment job if the merge was successfull
-- Testing webhook in bootcamp test3
-
-- Testing Jenkins agent node after local dev branch push
-- Testing Jenkins merge to main after successful dev commit
-- Testing Jenkins merge to main after successful dev commit - 2
-- Testing Jenkins push merge to main back to GitHub
-- Testing Jenkins push merge to main back to GitHub after allowing write access when adding repo pub key
-- New Jenkin server Job 1-2 try
-- New Jenkins server Job 1-2 
-- from push to ec2 nginx running
-
-- Jenkins Monday CI
-- Jenkins Monday CI2
-- Jenkins Monday CD
-- Jenkins Monday CD2
-- Jenkins Monday CD3
-- Jenkins Monday curl from github
-- Jenkins Monday curl from github2
-- Jenkins Monday curl from github3
-- Jenkins scp
-- Jenkins scp2
-- Jenkins run provision
-- Jenkins run app
-- Jenkins connect DB
-- Jenkins connect DB2
-- Jenkins connect DB3
-- Jenkins connect DB4
-- Jenkins connect DB5
-- Jenkins connect DB6 - added to both .bashrc and .profile
-- Jenkins connect DB7 - npm start in localhost ec2 works
-- Jenkins test - should run
-
-- Added npm kill all
-- Trying to fix pm2 not found
-
-- Changed pic
-- Changed pic 1
-- New Jenkin s server
-- New Jenkin s server2
-- Test again
+The test for posts will fail ( as expected ) if the database has not been correctly setup.

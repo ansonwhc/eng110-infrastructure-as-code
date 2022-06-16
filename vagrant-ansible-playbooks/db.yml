@@ -1,0 +1,35 @@
+---
+- hosts: db
+  gather_facts: yes
+  become: true
+
+  tasks:
+    - name: update & upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+    - name: apt-key for mongodb
+      apt_key:
+        url: hkp://keyserver.ubuntu.com:80
+        id: D68FA50FEA312927
+        state: present
+    - name: add mongodb version
+      apt_repository:
+        repo: deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse
+        update_cache: yes
+    - name: install mongodb
+      apt: pkg=mongodb-org state=present
+    - name: start and enable mongod
+      shell: |
+        sed -i '24s/.*/  bindIp: 0.0.0.0/' /etc/mongod.conf
+        sudo systemctl start mongod
+        sudo systemctl enable mongod
+
+- hosts: web
+  gather_facts: yes
+  become: true
+
+  tasks:
+    - name: set environment variable
+      shell: |
+        export DB_HOST=mongodb://db-ip:27017/posts

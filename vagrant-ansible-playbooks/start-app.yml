@@ -1,0 +1,14 @@
+---
+- hosts: web
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: run app
+      shell: |
+        cd ./sg_application_from_aws/app/
+        sudo apt-get update -y
+        sudo systemctl restart nginx
+        sudo systemctl enable nginx
+        npm install
+        sudo npm install pm2 -g
+        sudo pm2 start app.js
