@@ -33,7 +33,9 @@ Ansible describes the desired state. This file should exist here, owned by this 
     - Sensitive data can be stored in encrypted files using 
     - e.g.: AWS access ID & AWS Secret access key
 - Agentless architecture
-    ![](/images/ansible.png)
+
+    <img src="https://user-images.githubusercontent.com/94448528/174245634-8438efc0-00fd-473a-a93f-939ee9445b3c.png" height="550">
+
     - It does not install software on the nodes that it manages. This removes a potential point of failure and security vulnerability and simultaneously saves system resources.
     - It uses SSH protocol to connect the servers. Ansible requires Python to make the use of modules on client machines.
 - Dependencies
