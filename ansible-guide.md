@@ -33,8 +33,8 @@ Ansible describes the desired state. This file should exist here, owned by this 
     - Sensitive data can be stored in encrypted files using 
     - e.g.: AWS access ID & AWS Secret access key
 - Agentless architecture
-
-    <img src="https://user-images.githubusercontent.com/94448528/174245634-8438efc0-00fd-473a-a93f-939ee9445b3c.png" height="550">
+    
+    ![](/images/ansible.png)
 
     - It does not install software on the nodes that it manages. This removes a potential point of failure and security vulnerability and simultaneously saves system resources.
     - It uses SSH protocol to connect the servers. Ansible requires Python to make the use of modules on client machines.
@@ -155,7 +155,7 @@ Ansible describes the desired state. This file should exist here, owned by this 
     - It requires nginx, nodejs, mongodb, and setting an environment variable
     - More details [here](/sg_application_from_aws/README.md)
 
-    ![](/images/ansible-app-db.png)
+    <img src="https://user-images.githubusercontent.com/94448528/174245634-8438efc0-00fd-473a-a93f-939ee9445b3c.png" height="550">
 
 1. Create 3 VMs with Vagrant
     - app & db & controller
