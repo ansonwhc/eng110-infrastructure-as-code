@@ -59,7 +59,6 @@ Vagrant.configure("2") do |config|
         controller.vm.network :private_network, ip: "192.168.33.12"
 
         controller.vm.synced_folder "vagrant-ansible-playbooks/.", "/home/vagrant/.", type: "rsync"
-        #rsync__args: ["--include=hosts"]
 
         controller.vm.provision "shell", path: "vagrant-executables/controller_provision.sh"
 

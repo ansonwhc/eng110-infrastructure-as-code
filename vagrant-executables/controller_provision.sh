@@ -19,5 +19,3 @@ sudo apt-get install ansible -y
 # added [web] and [db] into hosts file
 sudo rm /etc/ansible/hosts
 sudo mv hosts /etc/ansible/hosts
-
-# sudo ansible-playbook web-playbook.yml
