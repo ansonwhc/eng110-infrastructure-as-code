@@ -1,0 +1,56 @@
+---
+- name: Configure Web node
+  hosts: web
+  become: true
+  gather_facts: yes
+
+  tasks:
+  - name: Check present packages
+    apt:
+      name: 
+        - apache2
+        - php
+        - php-mysql
+      state: present
+      update_cache: yes
+
+  - name: Ensure firewall is configured for apache2
+    firewalld:
+      port: 80/tcp
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - name: Reload service firewalld
+    systemd:
+      name: firewalld
+      state: reloaded
+    
+  - name: Update DirectoryIndex
+    lineinfile:
+      path: /etc/apache2/mods-enabled/dir.conf
+      search_string: 'DirectoryIndex'
+      line: "\tDirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm"
+
+  - name: Start & enable apache2
+    service:
+      name: apache2
+      state: started
+      enabled: yes
+
+  - name: Empty /var/www/html/ for our Repo
+    file:
+      state: absent
+      path: /var/www/html/
+
+  - name: clone Repo
+    git:
+      repo: 'https://github.com/kodekloudhub/learning-app-ecommerce.git'
+      dest: /var/www/html/
+
+  - name: Update index.php to connect to database
+    lineinfile:
+      path: /var/www/html/index.php
+      search_string: "$link = mysqli_connect"
+      line: "$link = mysqli_connect('localhost', 'ecomuser', 'ecompassword', 'ecomdb');"
+      

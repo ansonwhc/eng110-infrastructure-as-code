@@ -1,0 +1,95 @@
+---
+- name: Configure Database
+  hosts: web  # to be changed
+  gather_facts: yes
+  become: true
+
+  tasks:
+  - name: Ensure MariaDB is installed
+    apt:
+      name: mariadb-server
+      state: present
+      update_cache: yes
+
+  - name: Ensure MariaDB is started and enabled
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
+
+  - name: Ensure firewall is configured for database
+    firewalld:
+      port: 3306/tcp
+      zone: public
+      permanent: yes
+      state: enabled
+
+  - name: Reload service firewalld
+    systemd:
+      name: firewalld
+      state: reloaded
+
+  - name: Ensure PyMySQL is installed
+    apt:
+      name: python3-pymysql
+      state: present
+
+  - name: Start mysql
+    service:
+      name: mysql
+      state: started
+      enabled: yes
+
+  - name: Add user account for localhost
+    mysql_user:
+      check_implicit_admin: true
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      name: root
+      host: 'localhost'
+      password: ''
+      priv: "*.*:ALL,GRANT"
+      state: present
+
+  - name: Create a new database with name 'ecomdb'
+    mysql_db:
+      check_implicit_admin: yes
+      login_user: root
+      login_password: ''
+      name: ecomdb
+      state: present
+
+  - name: Add user account "ecomuser" for localhost
+    mysql_user:
+      check_implicit_admin: true
+      login_user: root
+      login_password: ''
+      name: ecomuser
+      host: 'localhost'
+      password: 'ecompassword'
+      priv: "*.*:ALL,GRANT"
+      state: present
+
+  - name: Add /tmp/db-load-script.sql
+    file:
+      path: /tmp/db-load-script.sql
+      state: touch
+      mode: '0644'
+
+  # same setup as demo-repo
+  - name: Ensure the db-load-script.sql is present
+    blockinfile:
+      path: /tmp/db-load-script.sql
+      block: |
+        USE ecomdb;
+        CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+
+        INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+
+  - name: Import database
+    mysql_db:
+      check_implicit_admin: true
+      login_user: ecomuser
+      login_password: 'ecompassword'
+      state: import
+      name: ecomdb
+      target: /tmp/db-load-script.sql
