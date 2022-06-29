@@ -15,13 +15,18 @@ sudo apt-get install python3-pip -y
 # Ref: 
 # - https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html (accessed 29/06/2022)
 # - https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html (accessed 29/06/2022)
-pip3 install -y ansible
+pip3 install ansible
 sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc  # for warnings
 source ~/.bashrc
+sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+source ~/.profile
+sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile
+source ~/.bash_profile
 
 # create /etc/ansible
 sudo mkdir -p /etc/ansible
 sudo touch /etc/ansible/hosts
+sudo touch /etc/ansible/ansible.cfg
 
 # add hosts
 sudo bash -c 'cat <<EOF >>/etc/ansible/hosts

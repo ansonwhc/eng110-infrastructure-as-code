@@ -1,0 +1,9 @@
+---
+- name: Run web-pre-requisites-playbook.yml
+  import_playbook: web-pre-requisites-playbook.yml
+
+- name: Run database-config-playbook.yml
+  import_playbook: database-config-playbook.yml
+
+- name: Run web-config-playbook.yml
+  import_playbook: web-config-playbook.yml
