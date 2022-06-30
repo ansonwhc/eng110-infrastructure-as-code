@@ -9,7 +9,6 @@
     apt:
       name: firewalld
       state: present
-      #update_cache: yes
 
   - name: Ensure firewalld is started
     service:

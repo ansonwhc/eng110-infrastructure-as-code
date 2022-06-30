@@ -22,17 +22,8 @@
     loop:
       - 80
 
-  - name: Ensure firewall is configured for apache2
-    firewalld:
-      port: "{{ item }}/tcp"
-      zone: public
-      permanent: yes
-      state: disabled
-    loop:
-      - 3306
-
   - name: Reload service firewalld
-    systemd:
+    service:
       name: firewalld
       state: reloaded
     
