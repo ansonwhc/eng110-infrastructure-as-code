@@ -12,14 +12,24 @@
         - php
         - php-mysql
       state: present
-      update_cache: yes
 
   - name: Ensure firewall is configured for apache2
     firewalld:
-      port: 80/tcp
+      port: "{{ item }}/tcp"
       zone: public
       permanent: yes
       state: enabled
+    loop:
+      - 80
+
+  - name: Ensure firewall is configured for apache2
+    firewalld:
+      port: "{{ item }}/tcp"
+      zone: public
+      permanent: yes
+      state: disabled
+    loop:
+      - 3306
 
   - name: Reload service firewalld
     systemd:
@@ -52,5 +62,4 @@
     lineinfile:
       path: /var/www/html/index.php
       search_string: "$link = mysqli_connect"
-      line: "$link = mysqli_connect('localhost', 'ecomuser', 'ecompassword', 'ecomdb');"
-      
+      line: "$link = mysqli_connect('192.168.33.11', 'ecomuser', 'ecompassword', 'ecomdb');"

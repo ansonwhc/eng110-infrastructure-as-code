@@ -1,6 +1,6 @@
 ---
 - name: Pre-Requisites
-  hosts: web
+  hosts: all
   gather_facts: yes
   become: true
 
@@ -9,7 +9,7 @@
     apt:
       name: firewalld
       state: present
-      update_cache: yes
+      #update_cache: yes
 
   - name: Ensure firewalld is started
     service:

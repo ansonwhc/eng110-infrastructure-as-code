@@ -32,6 +32,8 @@ sudo touch /etc/ansible/ansible.cfg
 sudo bash -c 'cat <<EOF >>/etc/ansible/hosts
 [web]
 web_server1 ansible_host=192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+[db]
+db_server1 ansible_host=192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
 EOF'
 
 # disable nodes pw check

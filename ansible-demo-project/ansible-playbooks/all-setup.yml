@@ -1,6 +1,6 @@
 ---
 - name: Run web-pre-requisites-playbook.yml
-  import_playbook: web-pre-requisites-playbook.yml
+  import_playbook: pre-requisites-playbook.yml
 
 - name: Run database-config-playbook.yml
   import_playbook: database-config-playbook.yml

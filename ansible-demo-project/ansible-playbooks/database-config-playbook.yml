@@ -1,6 +1,6 @@
 ---
-- name: Configure Database
-  hosts: web  # to be changed
+- name: Configure Database Play
+  hosts: db
   gather_facts: yes
   become: true
 
@@ -9,7 +9,6 @@
     apt:
       name: mariadb-server
       state: present
-      update_cache: yes
 
   - name: Ensure MariaDB is started and enabled
     service:
@@ -19,10 +18,12 @@
 
   - name: Ensure firewall is configured for database
     firewalld:
-      port: 3306/tcp
+      port: "{{ item }}/tcp"
       zone: public
       permanent: yes
       state: enabled
+    loop:
+      - 3306
 
   - name: Reload service firewalld
     systemd:
@@ -33,6 +34,15 @@
     apt:
       name: python3-pymysql
       state: present
+
+  - name: Update config file
+    lineinfile:
+      path: /etc/mysql/mariadb.conf.d/50-server.cnf
+      regexp: "{{ item.regexp_find }}"
+      line: "{{ item.to_replace }}"
+    with_items:
+      - { regexp_find: '^#port', to_replace: 'port = 3306'}
+      - { regexp_find: '^bind-address', to_replace: 'bind-address = 192.168.33.11'}
 
   - name: Start mysql
     service:
@@ -45,18 +55,22 @@
       check_implicit_admin: true
       login_unix_socket: /var/run/mysqld/mysqld.sock # For passwordless signin - https://stackoverflow.com/questions/63791797/why-can-ansible-not-connect-to-mysql
       name: 'ecomuser'
-      host: 'localhost'
+      host: "{{ item }}"  # TODO: reference web-server-ip
       password: 'ecompassword'  # TODO: all password should be referenced 
       priv: "*.*:ALL,GRANT"
       state: present
+    loop:
+      - '192.168.33.11'  # TODO: reference db-server-ip
+      - '192.168.33.10'  # TODO: reference web-server-ip
 
-  - name: Create a new database with name 'ecomdb'
+  - name: Ensure no database with name 'ecomdb'
     mysql_db:
-      check_implicit_admin: yes
       login_user: 'ecomuser'
       login_password: 'ecompassword'
+      login_host: '192.168.33.11'
+      login_port: 3306
       name: 'ecomdb'
-      state: present
+      state: absent
 
   - name: Add /tmp/db-load-script.sql
     file:
@@ -74,11 +88,21 @@
 
         INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
 
-  - name: Seed database
+  - name: Create database name 'ecomdb'
     mysql_db:
-      check_implicit_admin: true
       login_user: 'ecomuser'
       login_password: 'ecompassword'
-      state: present
+      login_host: '192.168.33.11'
+      login_port: 3306
+      name: 'ecomdb'
+      state: present  
+
+  - name: Seed database
+    mysql_db:
+      login_user: 'ecomuser'
+      login_password: 'ecompassword'
+      login_host: '192.168.33.11'
+      login_port: 3306
+      state: import
       name: 'ecomdb'
       target: /tmp/db-load-script.sql
