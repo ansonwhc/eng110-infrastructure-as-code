@@ -4,6 +4,14 @@
   become: true
   gather_facts: yes
 
+  vars:
+    web_ip: '192.168.33.10'
+    db_ip: '192.168.33.11'
+    web_port: '80'
+    mysql_db_name: 'ecomdb'
+    mysql_user: 'ecomuser'
+    mysql_user_password: "{{ mysql_password }}"
+
   tasks:
   - name: Check present packages
     apt:
@@ -15,12 +23,10 @@
 
   - name: Ensure firewall is configured for apache2
     firewalld:
-      port: "{{ item }}/tcp"
+      port: "{{ web_port }}/tcp"
       zone: public
       permanent: yes
       state: enabled
-    loop:
-      - 80
 
   - name: Reload service firewalld
     service:
@@ -53,4 +59,4 @@
     lineinfile:
       path: /var/www/html/index.php
       search_string: "$link = mysqli_connect"
-      line: "$link = mysqli_connect('192.168.33.11', 'ecomuser', 'ecompassword', 'ecomdb');"
+      line: "$link = mysqli_connect('{{ db_ip }}', '{{ mysql_user }}', '{{ mysql_user_password }}', '{{ mysql_db_name }}');"

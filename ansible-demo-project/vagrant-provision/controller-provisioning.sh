@@ -16,11 +16,17 @@ sudo apt-get install python3-pip -y
 # - https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html (accessed 29/06/2022)
 # - https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html (accessed 29/06/2022)
 pip3 install ansible
+
+# .bashrc is executed for an interactive non-login shell
 sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
+
+# .profile file is read by all shells, while ~/.bash_profile only by Bash
 sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
 source ~/.profile
-sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile
+
+# .bash_profile is read and executed when Bash is invoked as an interactive login shell
+sudo echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bash_profile  # should be used
 source ~/.bash_profile
 
 # create /etc/ansible
