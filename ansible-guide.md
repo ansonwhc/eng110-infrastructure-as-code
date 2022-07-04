@@ -1,9 +1,10 @@
 # Ansible
+- Quick Example [here](/ansible-demo-project/)
 - What is Ansible [here](#what-is-ansible)
 - Architecture [here](#architecture)
 - Ansible setup [here](#ansible-setup)
 - Ansible Vault Setup with AWS [here](#ansible-vault-setup-with-aws)
-- Quick Example [here](/ansible-demo-project/)
+
 
 ## What is Ansible?
 Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code.
@@ -153,3 +154,65 @@ $ ansible-playbook first-playbook.yml
 
 - To use the credentials stored in the vault
     - `ansible-playbook <playbook> --ask-vault-pass`
+
+## File separation
+It is a good practice to separate the files to store information instead of keeping all information within one file.  
+
+We can define variables in a variety of places, such as in inventory, in playbooks, in reusable files, in roles, and at the command line. Ansible loads every possible variable it finds, then chooses the variable to apply based on [variable precedence rules](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#ansible-variable-precedence).  
+
+More info [here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#where-to-set-variables)  
+
+- Example
+
+    **Original:**
+
+    _/etc/ansible/hosts_
+
+        [aws_agent]
+        ec2-instance ansible_host=8.8.8.8 ansible_user=ubuntu ansible_ssh_private_key_file=/path/to/ssh_key
+
+    **Second iteration:**
+
+    _host_vars location_
+
+        ~/path_to_playbooks
+        ├── ping-playbook.yml
+        └── host_vars
+            └── ec2-instance.yml
+
+    _/etc/ansible/hosts_
+
+        [aws_agent]
+        ec2-instance
+
+    _~/path_to_playbooks/ping-playbook.yml_
+
+        ---
+        - name: Ping play
+          hosts: aws_agent
+          tasks:
+            - name: ping task
+              ping:
+
+    _~/path_to_playbooks/host_vars/ec2-instance.yml_ 
+
+        ansible_host: 8.8.8.8
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: /path/to/ssh_key
+
+- There are many other usages, e.g., 
+    `- include_tasks: <task-1.yml>`
+    `- import_tasks: <task-1.yml>`
+    `- import_playbook: <playbook-1.yml>`
+        
+## Roles
+Roles let you automatically load related vars, files, tasks, handlers, and other Ansible artifacts based on a known file structure. After you group your content in roles, you can easily reuse them and share them with other users.
+
+[Ansible Galaxy](https://galaxy.ansible.com/docs/) is a free site for finding, downloading, rating, and reviewing all kinds of community-developed Ansible roles and can be a great way to get a jumpstart on your automation projects.
+
+To use written roles, simply run: `ansible-galaxy install <role>`  
+
+To create roles, simply run: `ansible-galaxy init <role>`
+
+More info on downloading, and using roles [here](https://galaxy.ansible.com/docs/using/installing.html#roles)  
+
