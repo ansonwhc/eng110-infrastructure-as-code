@@ -1,8 +1,13 @@
 # Ansible Sample E-Commerce Application
-This folder will contain info on using Ansible to setup a [sample e-commerce application](https://github.com/kodekloudhub/learning-app-ecommerce)
+This folder will contain info on using Ansible to setup a [sample e-commerce application](https://github.com/kodekloudhub/learning-app-ecommerce).
 
+It is a sample e-commerce application built for learning purposes. We will be deploying on Ubuntu 20.04 systems in a multi-node architecture.
+
+## Content
 1. [VMs setup](#vms-setup)
-2. [mysql user password](#mysql-user-password)
+2. [Multi-node architecture](#multi-node-architecture)
+3. [Ansible playbooks](#ansible-playbooks)
+4. [mysql user password](#mysql-user-password)
 
 ## VMs setup
 We will be using Vagrant ([Vagrantfile](/ansible-demo-project/Vagrantfile)) for creating
@@ -10,7 +15,19 @@ We will be using Vagrant ([Vagrantfile](/ansible-demo-project/Vagrantfile)) for 
 2. Web Node (Front-end)
 3. Database Node (Back-end)
 
-    (each with their own provisioning files [here](/ansible-demo-project/vagrant-provision/))
+(each with their own provisioning files [here](/ansible-demo-project/vagrant-provision/))
+
+## Multi-node architecture
+We will create a Ansible controller to manage two nodes (front-end, back-end). 
+
+- The web node contains a web page is written in PHP (index.php)
+- The database node contains a Mariadb and is accessed by MySQL
+- The Web node can access the MySQL-database using the created account
+
+![](/images/ansible-demo-project-arch.png)
+
+## Ansible playbooks
+This directory contains 4 playbooks stored [here](/ansible-demo-project/ansible-playbooks/). The plays and order are in reference to the original setup [here](https://github.com/kodekloudhub/learning-app-ecommerce).
 
 ## mysql user password
 Reference:
