@@ -212,7 +212,106 @@ Roles let you automatically load related vars, files, tasks, handlers, and other
 
 To use written roles, simply run: `ansible-galaxy install <role>`  
 
-To create roles, simply run: `ansible-galaxy init <role>`
+To create roles, simply run: `ansible-galaxy init <role>`. The default structure would be created.
+
+<!-- Quick example [here]() -->  
 
 More info on downloading, and using roles [here](https://galaxy.ansible.com/docs/using/installing.html#roles)  
 
+## Asynchronous actions and polling
+Asynchronous actions are ansible tasks that run in the background which can be checked or followed up later.  
+
+They are are useful when we don't want Ansible to hold the connection to the remote node open until the action is completed, e.g. monitoring tasks.  
+
+- To set the timeout-duration of the ansible background task   
+    `async: <async-action-timeout-seconds>`  
+
+- To specify the freqency of automatic status-checking by Ansible  
+    `polling: <status-checking-every-n-seconds>`  
+
+    - When `polling > 0`, Ansible will still block the next task in your playbook, waiting until the current async task either completes, fails or times out. However, the task will only time out if it exceeds the timeout limit you set with the `async` parameter.
+
+    - When `polling = 0`, tasks in the playbook will run concurrently. Ansible starts the task and immediately moves on to the next task without waiting for a result. Each async task runs until it either completes, fails or times out (runs longer than its async value). The playbook run ends without checking back on async tasks.
+
+        - If you need a synchronization point with an async task, you can register it to obtain its job ID and use the async_status module to observe it in a later task. For example:
+
+                - name: Run an async task
+                apt:
+                    name: docker-io
+                    state: present
+                async: 1000
+                poll: 0
+                register: apt_sleeper
+
+                - name: Check on an async task
+                async_status:
+                    jid: "{{ apt_sleeper.ansible_job_id }}"
+                register: job_result
+                until: job_result.finished
+                retries: 100
+                delay: 10
+
+More info [here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html)
+
+## Controlling playbook execution
+- Strategy
+    - Ansible strategy specifies the way that tasks are carried out in a playbook
+    1. Linear strategy (default)
+        - Up to the fork limit of hosts will execute each task at the same time and then the next series of hosts until the batch is done, before going on to the next task
+    2. Free strategy
+        - Ansible will not wait for other hosts to finish the current task before queuing more tasks for other hosts
+        - A host that is slow or stuck on a specific task won’t hold up the rest of the hosts and tasks
+    3. Debug strategy
+        - Task execution is ‘linear’ but controlled by an interactive debug session
+
+    - For example
+
+            - hosts: all
+            strategy: free
+            tasks:
+            # ...
+
+    - Change default strategy: can be changed in the `ansible.cfg` file, for example:
+
+            [defaults]
+            strategy = free
+
+<!-- (Ansible side) -->
+- Forks
+    - Ansible works by spinning off forks of itself and talking to many remote systems independently (default 5)
+    - The number can be specified in the `ansible.cfg` file, for example:
+
+            [defaults]
+            forks = 30
+
+- Keywords
+    <!-- (Remote agent side) -->
+    - `serials`
+        - A number, a percentage, or a list of numbers of hosts/machines you want to manage at a time, similar to specifying a batch size
+        - Ansible completes the play on the specified number or percentage of hosts before starting the next batch of hosts
+
+    - `throttle`
+        - Limits the number of workers for a particular task
+        - To have an effect, your throttle setting must be lower than your forks or serial setting if you are using them together
+
+    - `order`
+        - Control how Ansible selects the next host in a group
+        - Possible values ([here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html#ordering-execution-based-on-inventory)):
+            1. inventroy
+            2. reverse_iventory
+            3. sorted
+            4. reverse_sorted
+            5. shuffle 
+
+    - `run_once`
+        - Run a task on a single host
+        - Ansible executes this task on the first host in the current batch and applies all results and facts to all the hosts in the same batch
+        -  To run the task on a specific host, instead of the first host in the batch, delegate the task by `delegate_to: <host>`
+
+More info [here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html)
+
+## Error handling
+[here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html)
+
+## Playbooks filters
+[here](https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html)
